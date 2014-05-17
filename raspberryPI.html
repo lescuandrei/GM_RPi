@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+
+      html, 
+      body, 
+      #map_canvas { 
+         width:   100%;
+         height:  100%; }
+    </style>
+    
+    <script
+      src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization">
+    </script>
+    
+    <script>
+
+    	// 	json url
+    	var DATA_SERVICE_URL = "https://script.google.com/macros/s/AKfycbz5mEnqpvJBYn84xJwuieT3VlrWwwLRsCmIcaQQCfS1Arm0oHc/exec?jsonp=callback";
+
+    	// 	COLOURS PALLET		   GREEN 		  YELLOW 	 	ORANGE		RED 		  DARKRED		VIOLET		 BLACK		    WHITE
+    	var colors = new Array(  "2AFF31",  "F3FF35",	"FF8F35",	"F43D3D",	"8C0F0F",	"622BD8",  	"000000", 	"FFFFFF");
+    	
+      var Timisoara = new google.maps.LatLng(45.746515, 21.227546);    
+
+     
+
+
+    	// for shadow
+        var pinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
+        new google.maps.Size(40, 37),
+        new google.maps.Point(0, 0),
+        new google.maps.Point(12, 35));
+
+
+      var map, pointarray, heatmap;
+
+
+    function initialize() {
+        
+        map = new google.maps.Map(document.getElementById('map_canvas'), {
+          center: Timisoara,
+          zoom: 14,
+          maxZoom: 20,
+          mapTypeId: google.maps.MapTypeId.SATELLITE
+        });
+
+       
+        // Create a <script> tag and set the USGS URL as the source.
+        var scriptElement = document.createElement('script');
+        scriptElement.src = DATA_SERVICE_URL;
+        document.getElementsByTagName('head')[0].appendChild(scriptElement);
+ 
+      }
+
+
+    function getData(data) {
+
+    console.log("AM APELAT FUNCTIA GETDATA() lungimea data LENGTH: " + data.length);
+    return data;
+    }
+
+
+    function callback (data) {
+
+        console.log("\n\n\n HEATMAP MAP\n\n\n");
+       
+          
+          for (var i = 0; i < data.length; i++) {
+          var medTab = new Array(new google.maps.LatLng(data[i][3],data[i][2])); 
+
+
+          var pointArray = new google.maps.MVCArray(medTab);
+
+           heatmap = new google.maps.visualization.HeatmapLayer({
+           data: pointArray, 
+           gradient : setColorGradient(data, i),
+           radius : 30
+           });
+
+
+
+          // add point to point to map
+          console.log("HEATMAP value is:" + this.heatmap);
+          console.log("\nDATA LENGTH is:" + data.length);
+          heatmap.setMap(map);
+        
+          console.log("data is -------" + data[i][3] + " " + data[i][2]);
+          console.log("data.length is " + data.length + "number i" + i);
+        
+
+          var latLng = new google.maps.LatLng( data[i][3],data[i][2]);
+
+          var marker = new google.maps.Marker({
+            position: 
+            
+            new google.maps.LatLng( data[i][3],data[i][2]),
+            map: map,
+            title: 'CO2: ' + data[i][1] + "    " + 'VOC: ' + data[i][2],
+            icon: setColor(data, i),
+            shadow: pinShadow	
+          });
+        }
+      }
+
+
+    function pinImageFunction(colorNumber) {
+
+		//  set color green
+    	var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + colors[colorNumber],
+        new google.maps.Size(21, 34),
+        new google.maps.Point(0,0),
+        new google.maps.Point(10, 34));
+    	console.log(colors[colorNumber]);
+    	return pinImage;	
+    }
+
+
+
+
+
+    function setColorGradient(data, variable) {
+
+       var gradientDarkRed = [
+    'rgba(0, 255, 255, 0)',
+    'rgba(0, 255, 255, 1)',
+    'rgba(140, 15, 15, 0.5)',
+    'rgba(140, 15, 15, 0.6)',
+    'rgba(140, 15, 15, 0.7)',
+    'rgba(140, 15, 15, 0.8)',
+    'rgba(140, 15, 15, 0.9)',
+    'rgba(140, 15, 15, 1)',
+    'rgba(140, 15, 15, 1)',
+    'rgba(140, 15, 15, 1)',
+    'rgba(140, 15, 15, 1)',
+    'rgba(237, 28, 36, 1)',
+    'rgba(191, 0, 31, 1)',
+    'rgba(255, 0, 0, 1)'
+   ] ;  
+
+      var gradientGreen = [
+    'rgba(0, 255, 255, 0)',
+    'rgba(0, 255, 255, 1)',
+    'rgba(42, 255, 49, 0.5)',
+    'rgba(42, 255, 49, 0.6)',
+    'rgba(42, 255, 49, 0.7)',
+    'rgba(42, 255, 49, 0.8)',
+    'rgba(42, 255, 49, 0.9)',
+    'rgba(42, 255, 49, 1)',
+    'rgba(42, 255, 49, 1)',
+    'rgba(42, 255, 49, 1)',
+    'rgba(42, 255, 49, 1)',
+    'rgba(42, 255, 49, 1)',
+    'rgba(191, 0, 31, 1)',
+    'rgba(255, 0, 0, 1)'
+      ];  
+
+      var gradientYellow = [
+    'rgba(0, 255, 255, 0)',
+    'rgba(0, 255, 255, 1)',
+    'rgba(243, 255, 53, 0.5)',
+    'rgba(243, 255, 53, 0.6)',
+    'rgba(243, 255, 53, 0.7)',
+    'rgba(243, 255, 53, 0.8)',
+    'rgba(243, 255, 53, 0.9)',
+    'rgba(243, 255, 53, 0.9)',
+    'rgba(243, 255, 53, 1)',
+    'rgba(243, 255, 53, 1)',
+    'rgba(243, 255, 53, 1)',
+    'rgba(243, 255, 53, 1)',
+    'rgba(243, 255, 53, 1)',
+    'rgba(191, 0, 31, 1)',
+    'rgba(255, 0, 0, 1)'
+      ];
+
+      var gradientOrange = [
+    'rgba(0, 255, 255, 0)',
+    'rgba(0, 255, 255, 1)',
+    'rgba(255, 143, 53, 0.5)',
+    'rgba(255, 143, 53, 0.6)',
+    'rgba(255, 143, 53, 0.7)',
+    'rgba(255, 143, 53, 0.8)',
+    'rgba(255, 143, 53, 0.9)',
+    'rgba(255, 143, 53, 1)',
+    'rgba(255, 143, 53, 1)',
+    'rgba(255, 143, 53, 1)',
+    'rgba(255, 143, 53, 1)',
+    'rgba(255, 143, 53, 1)',
+    'rgba(191, 0, 31, 1)',
+    'rgba(255, 0, 0, 1)'
+      ];
+
+      var gradientRed = [
+    'rgba(0, 255, 255, 0)',
+    'rgba(0, 255, 255, 1)',
+    'rgba(244, 61, 61, 0.5)',
+    'rgba(244, 61, 61, 0.6)',
+    'rgba(244, 61, 61, 0.7)',
+    'rgba(244, 61, 61, 0.8)',
+    'rgba(244, 61, 61, 0.9)',
+    'rgba(244, 61, 61, 1)',
+    'rgba(244, 61, 61, 1)',
+    'rgba(244, 61, 61, 1)',
+    'rgba(244, 61, 61, 1)',
+    'rgba(244, 61, 61, 1)',
+    'rgba(191, 0, 31, 1)',
+    'rgba(255, 0, 0, 1)'
+      ];
+
+      var gradientDarkRed = [
+    'rgba(0, 255, 255, 0)',
+    'rgba(0, 255, 255, 1)',
+    'rgba(140, 15, 15, 0.5)',
+    'rgba(140, 15, 15, 0.6)',
+    'rgba(140, 15, 15, 0.7)',
+    'rgba(140, 15, 15, 0.8)',
+    'rgba(140, 15, 15, 0.9)',
+    'rgba(140, 15, 15, 1)',
+    'rgba(140, 15, 15, 1)',
+    'rgba(140, 15, 15, 1)',
+    'rgba(140, 15, 15, 1)',
+    'rgba(237, 28, 36, 1)',
+    'rgba(191, 0, 31, 1)',
+    'rgba(255, 0, 0, 1)'
+   ] ;  
+
+      var gradientViolet = [
+    'rgba(0, 255, 255, 0)',
+    'rgba(0, 255, 255, 1)',
+    'rgba(98, 43, 216, 0.5)',
+    'rgba(98, 43, 216, 0.6)',
+    'rgba(98, 43, 216, 0.7)',
+    'rgba(98, 43, 216, 0.8)',
+    'rgba(98, 43, 216, 0.9)',
+    'rgba(98, 43, 216, 1)',
+    'rgba(98, 43, 216, 1)',
+    'rgba(98, 43, 216, 1)',
+    'rgba(98, 43, 216, 1)',
+    'rgba(98, 43, 216, 1)',
+    'rgba(191, 0, 31, 1)',
+    'rgba(255, 0, 0, 1)'
+      ];
+
+
+
+      //  Green     350 - 450 ppm                       
+      if(data[variable][1] < 450 && data[variable][1] > 350){  
+      return  gradientGreen;
+      }
+      //  Yellow    < 600 ppm     
+      else if(data[variable][1] < 600 && data[variable][1] > 450){
+    return  gradientYellow;
+      }
+      //  Orange    600 - 900 ppm
+      else if(data[variable][1] > 600 && data[variable][1] < 900){
+    return  gradientOrange;
+      }
+      //  Red     900 - 1000 ppm  
+      else if(data[variable][1] < 1000 && data[variable][1] > 900){
+    return  gradientRed;
+      }
+      //  Dark Red  1000 - 2500 ppm
+      else if(data[variable][1] > 1000 && data[variable][1] < 2500){
+    return  gradientDarkRed;
+      }
+      //  Violet    2500 - 5000 ppm 
+      else if(data[variable][1] > 2500 && data[variable][1] < 5000){
+      return  gradientViolet;
+      }
+
+      return pinImage;
+
+    }
+
+
+    function setColor(data, variable) {
+
+    	//	Green 		350 - 450 ppm												
+    	if(data[variable][1] < 450 && data[variable][1] > 350){  
+    	return	pinImageFunction(0);
+    	}
+    	//	Yellow 		< 600 ppm			
+    	else if(data[variable][1] < 600){
+		return	pinImageFunction(1);
+    	}
+    	// 	Orange 		600 - 900 ppm
+    	else if(data[variable][1] > 600 && data[variable][1] < 900){
+		return	pinImageFunction(2);
+    	}
+    	//  Red			900 - 1000 ppm	
+    	else if(data[variable][1] < 1000 && data[variable][1] > 900){
+		return	pinImageFunction(3);
+    	}
+    	//	Dark Red 	1000 - 2500 ppm
+    	else if(data[variable][1] > 1000 && data[variable][1] < 2500){
+		return	pinImageFunction(4);
+    	}
+    	//	Violet 		2500 - 5000 ppm	
+    	else if(data[variable][1] > 2500 && data[variable][1] < 5000){
+    	return	pinImageFunction(5);
+    	}
+
+    	return pinImage;
+    }
+
+  function toggleHeatmap() {
+
+  var dataFinal = getData();
+
+  heatmap.setMap(heatmap.getMap() ? null : map);
+ 
+}
+
+  function changeGradient() {
+
+var gradient = [
+    'rgba(0, 255, 255, 0)',
+    'rgba(0, 255, 255, 1)',
+    'rgba(0, 191, 255, 1)',
+    'rgba(0, 127, 255, 1)',
+    'rgba(0, 63, 255, 1)',
+    'rgba(0, 0, 255, 1)',
+    'rgba(0, 0, 223, 1)',
+    'rgba(0, 0, 191, 1)',
+    'rgba(0, 0, 159, 1)',
+    'rgba(0, 0, 127, 1)',
+    'rgba(63, 0, 91, 1)',
+    'rgba(127, 0, 63, 1)',
+    'rgba(191, 0, 31, 1)',
+    'rgba(255, 0, 0, 1)'
+  ]
+
+  heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
+}
+
+function changeRadius() {
+  heatmap.set('radius', heatmap.get('radius') ? null : 30);
+}
+
+function changeOpacity() {
+  heatmap.set('opacity', heatmap.get('opacity') ? null : 0.4);
+}     
+     google.maps.event.addDomListener(window, 'load', initialize);
+     
+    </script>
+  </head>	
+  <body>
+
+    <div id="panel">
+      <button onclick="toggleHeatmap()">Toggle Heatmap</button>
+      <button onclick="changeGradient()">Change gradient</button>
+      <button onclick="changeRadius()">Change radius</button>
+      <button onclick="changeOpacity()">Change opacity</button>
+    </div>
+    <div id="map_canvas"></div>
+
+  </body>
+</html>
